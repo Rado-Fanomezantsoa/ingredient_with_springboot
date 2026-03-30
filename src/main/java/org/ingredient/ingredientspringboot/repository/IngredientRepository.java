@@ -37,4 +37,18 @@ public class IngredientRepository {
             """;
         return jdbcTemplate.query(sql, ingredientRowMapper);
     }
+
+    public Ingredient findById(Integer id) {
+        String sql = """
+        SELECT id, name, price, category, initial_stock 
+        FROM ingredient 
+        WHERE id = ?
+        """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, ingredientRowMapper, id);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

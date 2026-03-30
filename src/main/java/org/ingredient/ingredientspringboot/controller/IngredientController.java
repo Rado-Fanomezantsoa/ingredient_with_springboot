@@ -1,10 +1,12 @@
 package org.ingredient.ingredientspringboot.controller;
 
 import org.ingredient.ingredientspringboot.dto.IngredientResponse;
+import org.ingredient.ingredientspringboot.entity.Ingredient;
 import org.ingredient.ingredientspringboot.mapper.IngredientMapper;
 import org.ingredient.ingredientspringboot.service.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +35,14 @@ public class IngredientController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(responses);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<IngredientResponse> getIngredientById(@PathVariable("id") Integer id) {
+
+        Ingredient ingredient = service.getById(id);
+
+        IngredientResponse response = mapper.toResponse(ingredient);
+
+        return ResponseEntity.ok(response);
     }
 }

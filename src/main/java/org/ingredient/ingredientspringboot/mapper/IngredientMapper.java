@@ -8,14 +8,12 @@ import org.springframework.stereotype.Component;
 public class IngredientMapper {
 
     public IngredientResponse toResponse(Ingredient ingredient) {
-        if (ingredient == null) return null;
-
-        IngredientResponse response = new IngredientResponse();
-        response.setId(ingredient.getId());
-        response.setName(ingredient.getName());
-        response.setPrice(ingredient.getPrice());
-        response.setCategory(ingredient.getCategory());
-        response.setInitialStock(ingredient.getInitialStock());
-        return response;
+        IngredientResponse r = new IngredientResponse();
+        r.setId(ingredient.getId());
+        r.setName(ingredient.getName());
+        r.setPrice(ingredient.getPrice());
+        r.setCategory(ingredient.getCategory());
+        r.setInitialStock(ingredient.getInitialStock());
+        return r;
     }
 }
