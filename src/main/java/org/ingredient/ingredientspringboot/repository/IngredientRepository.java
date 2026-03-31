@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -50,5 +51,19 @@ public class IngredientRepository {
         } catch (org.springframework.dao.EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public Double getStockValueAt(Integer ingredientId, LocalDateTime at) {
+        String sql = """
+        SELECT COALESCE(
+            SUM(CASE WHEN type = 'IN' THEN quantity ELSE -quantity END), 
+            0
+        ) as stock_value
+        FROM stock_movement 
+        WHERE id_ingredient = ? 
+          AND creation_datetime <= ?
+        """;
+
+        return jdbcTemplate.queryForObject(sql, Double.class, ingredientId, at);
     }
 }

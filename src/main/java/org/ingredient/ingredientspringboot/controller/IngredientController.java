@@ -1,15 +1,15 @@
 package org.ingredient.ingredientspringboot.controller;
 
 import org.ingredient.ingredientspringboot.dto.IngredientResponse;
+import org.ingredient.ingredientspringboot.dto.StockResponse;
 import org.ingredient.ingredientspringboot.entity.Ingredient;
+import org.ingredient.ingredientspringboot.exception.BadRequestException;
 import org.ingredient.ingredientspringboot.mapper.IngredientMapper;
 import org.ingredient.ingredientspringboot.service.IngredientService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -42,6 +42,20 @@ public class IngredientController {
         Ingredient ingredient = service.getById(id);
 
         IngredientResponse response = mapper.toResponse(ingredient);
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/{id}/stock")
+    public ResponseEntity<StockResponse> getStockAt(
+            @PathVariable("id") Integer id,
+            @RequestParam(value = "at", required = false) LocalDateTime at,
+            @RequestParam(value = "unit", required = false) String unit) {
+        
+        if (at == null || unit == null || unit.trim().isEmpty()) {
+            throw new BadRequestException("Either mandatory query parameter `at` or `unit` is not provided.");
+        }
+
+        StockResponse response = service.getStockAt(id, at, unit);
 
         return ResponseEntity.ok(response);
     }
