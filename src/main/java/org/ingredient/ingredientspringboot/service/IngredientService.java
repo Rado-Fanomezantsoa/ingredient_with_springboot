@@ -1,11 +1,13 @@
 package org.ingredient.ingredientspringboot.service;
 
+import org.ingredient.ingredientspringboot.dto.StockMovementResponse;
 import org.ingredient.ingredientspringboot.dto.StockResponse;
 import org.ingredient.ingredientspringboot.entity.Ingredient;
 import org.ingredient.ingredientspringboot.exception.IngredientNotFoundException;
 import org.ingredient.ingredientspringboot.repository.IngredientRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,5 +46,15 @@ public class IngredientService {
         response.setUnit(unit.toUpperCase());
         response.setValue(stockValue);
         return response;
+    }
+
+    public List<StockMovementResponse> getStockMovements(
+            Integer id, Instant from, Instant to) {
+        Ingredient ingredient = repository.findById(id);
+        if (ingredient == null) {
+            throw new IngredientNotFoundException("Ingredient.id=" + id + " is not found");
+        }
+
+        return repository.findStockMovementsByIngredientId(id, from, to);
     }
 }

@@ -1,13 +1,16 @@
 package org.ingredient.ingredientspringboot.repository;
 
+import org.ingredient.ingredientspringboot.dto.StockMovementResponse;
 import org.ingredient.ingredientspringboot.entity.CategoryEnum;
 import org.ingredient.ingredientspringboot.entity.Ingredient;
+import org.ingredient.ingredientspringboot.entity.MovementType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -65,5 +68,37 @@ public class IngredientRepository {
         """;
 
         return jdbcTemplate.queryForObject(sql, Double.class, ingredientId, at);
+    }
+
+    public List<StockMovementResponse> findStockMovementsByIngredientId(
+            Integer ingredientId, Instant from, Instant to) {
+
+        String sql = """
+        SELECT id, 
+               creation_datetime, 
+               unit, 
+               quantity, 
+               type
+        FROM stock_movement 
+        WHERE id_ingredient = ?
+          AND (? IS NULL OR creation_datetime >= ?)
+          AND (? IS NULL OR creation_datetime <= ?)
+        ORDER BY creation_datetime DESC
+        """;
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> {
+                    StockMovementResponse m = new StockMovementResponse();
+                    m.setId(rs.getInt("id"));
+                    m.setCreationDatetime(rs.getTimestamp("creation_datetime").toInstant());
+                    m.setUnit(rs.getString("unit"));
+                    m.setQuantity(rs.getDouble("quantity"));
+                    m.setType(MovementType.valueOf(rs.getString("type")));
+                    return m;
+                },
+                ingredientId,
+                from, from,
+                to, to
+        );
     }
 }

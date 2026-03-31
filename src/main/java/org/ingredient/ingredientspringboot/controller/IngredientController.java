@@ -1,6 +1,7 @@
 package org.ingredient.ingredientspringboot.controller;
 
 import org.ingredient.ingredientspringboot.dto.IngredientResponse;
+import org.ingredient.ingredientspringboot.dto.StockMovementResponse;
 import org.ingredient.ingredientspringboot.dto.StockResponse;
 import org.ingredient.ingredientspringboot.entity.Ingredient;
 import org.ingredient.ingredientspringboot.exception.BadRequestException;
@@ -9,6 +10,7 @@ import org.ingredient.ingredientspringboot.service.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,5 +60,20 @@ public class IngredientController {
         StockResponse response = service.getStockAt(id, at, unit);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/stockMovements")
+    public ResponseEntity<List<StockMovementResponse>> getStockMovements(
+            @PathVariable("id") Integer id,
+            @RequestParam(value = "from", required = false) Instant from,
+            @RequestParam(value = "to", required = false) Instant to) {
+
+        List<StockMovementResponse> movements = service.getStockMovements(id, from, to);
+
+        if (movements.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(movements);
     }
 }
